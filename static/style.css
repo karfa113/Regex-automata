@@ -110,6 +110,24 @@ footer { color: var(--muted); font-size: 0.875rem; padding: 12px 4px 0; }
 
 /* ---------- type ---------- */
 
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.brand-logo {
+  width: 52px;
+  height: 52px;
+  filter: drop-shadow(0 0 14px rgba(255, 122, 26, 0.45));
+}
+.brand-name {
+  color: var(--ember-300);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
 h1 {
   margin: 0;
   max-width: 17ch;

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="logo-title logo-desc">
+  <title id="logo-title">Regex Automata logo</title>
+  <desc id="logo-desc">Three connected state circles representing a regular expression automaton.</desc>
+  <defs>
+    <linearGradient id="ember" x1="16" y1="16" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffd9a8"/>
+      <stop offset=".55" stop-color="#ff9a3d"/>
+      <stop offset="1" stop-color="#e2580a"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto">
+      <path d="m0 0 7 3.5L0 7Z" fill="#ffb870"/>
+    </marker>
+  </defs>
+  <path d="M18 48h17m26 0h17M48 35V18" fill="none" stroke="#ffb870" stroke-linecap="round" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M62 61c-7 10-20 13-30 7" fill="none" stroke="#ffb870" stroke-linecap="round" stroke-width="3" marker-end="url(#arrow)"/>
+  <circle cx="48" cy="48" r="15" fill="#000" stroke="url(#ember)" stroke-width="4"/>
+  <circle cx="48" cy="48" r="8" fill="none" stroke="#ffd9a8" stroke-width="2"/>
+  <circle cx="18" cy="48" r="5" fill="#ff9a3d"/>
+  <circle cx="78" cy="48" r="5" fill="#ff9a3d"/>
+  <circle cx="48" cy="14" r="5" fill="#ff9a3d"/>
+</svg>
