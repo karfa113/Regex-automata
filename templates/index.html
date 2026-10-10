@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#000000">
+  <title>Regex to NFA and DFA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+  <div class="glow glow-a" aria-hidden="true"></div>
+  <div class="glow glow-b" aria-hidden="true"></div>
+  <div class="glow glow-c" aria-hidden="true"></div>
+
+  <div class="page">
+    <header class="hero glass-xl">
+      <h1>Turn a regular expression into the smallest DFA</h1>
+      <p class="lede">
+        Thompson's construction builds the NFA, subset construction turns it into a DFA,
+        and minimization merges equivalent states. Type an expression, then test strings against the result.
+      </p>
+
+      <form id="regex-form" class="regex-field" autocomplete="off">
+        <label for="regex" class="sr-only">Regular expression</label>
+        <input id="regex" type="text" value="" spellcheck="false" autocapitalize="off" placeholder="Enter a regular expression">
+        <button id="convert-btn" class="btn btn-primary" type="submit">Convert</button>
+      </form>
+
+      <div class="examples">
+        <span class="examples-label">Examples</span>
+        <button type="button" class="chip" data-regex="(a|b)*abb">(a|b)*abb</button>
+        <button type="button" class="chip" data-regex="a+b*">a+b*</button>
+        <button type="button" class="chip" data-regex="(ab)+">(ab)+</button>
+        <button type="button" class="chip" data-regex="a*b|c">a*b|c</button>
+        <button type="button" class="chip" data-regex="(a|b)+c">(a|b)+c</button>
+      </div>
+
+      <p class="hint">
+        Use letters and digits as symbols, <code>|</code> for union, <code>*</code> for zero or more,
+        <code>+</code> for one or more, and <code>( )</code> to group. Writing two items side by side concatenates them.
+      </p>
+
+      <label class="check">
+        <input type="checkbox" id="dead-state" checked>
+        <span>Include the dead state so the DFA is complete</span>
+      </label>
+
+      <div id="error" class="error" role="alert" hidden></div>
+
+      <ol id="flow" class="flow" aria-label="State counts at each stage" hidden>
+        <li><strong id="count-nfa">0</strong> NFA states</li>
+        <li><strong id="count-subset">0</strong> DFA states</li>
+        <li class="flow-final"><strong id="count-min">0</strong> states after minimization</li>
+      </ol>
+    </header>
+
+    <main id="output" hidden>
+      <section class="glass" aria-labelledby="parse-title">
+        <h2 id="parse-title">How the expression was read</h2>
+        <dl class="parse">
+          <dt>With explicit concatenation</dt><dd><code id="with-concat"></code></dd>
+          <dt>Postfix form</dt><dd><code id="postfix"></code></dd>
+          <dt>Alphabet</dt><dd><code id="alphabet"></code></dd>
+        </dl>
+      </section>
+
+      <section class="glass" aria-labelledby="automata-title">
+        <div class="section-head">
+          <h2 id="automata-title">Automata</h2>
+          <div class="tabs" role="tablist" aria-label="Automaton">
+            <button class="tab is-active" role="tab" id="tab-nfa" aria-controls="pane-nfa" aria-selected="true" data-tab="nfa">NFA</button>
+            <button class="tab" role="tab" id="tab-dfa" aria-controls="pane-dfa" aria-selected="false" data-tab="dfa" tabindex="-1">Minimized DFA</button>
+          </div>
+        </div>
+
+        <div class="tabpane" id="pane-nfa" role="tabpanel" aria-labelledby="tab-nfa">
+          <p class="pane-note">Built with Thompson's construction. Arrows labeled ε move without reading a symbol.</p>
+          <div class="toolbar" data-for="nfa-diagram">
+            <button type="button" class="tool" data-zoom="out" aria-label="Zoom out">−</button>
+            <button type="button" class="tool" data-zoom="in" aria-label="Zoom in">+</button>
+            <button type="button" class="tool" data-zoom="fit">Fit</button>
+          </div>
+          <div class="diagram inset" id="nfa-diagram" tabindex="0" aria-label="NFA state diagram"></div>
+
+          <h3>Transition table</h3>
+          <div class="table-wrap inset"><table id="nfa-table"></table></div>
+
+          <details>
+            <summary>How the NFA was built</summary>
+            <ol id="nfa-steps" class="plain-list"></ol>
+          </details>
+        </div>
+
+        <div class="tabpane" id="pane-dfa" role="tabpanel" aria-labelledby="tab-dfa" hidden>
+          <p class="pane-note">This is the minimized DFA. Equivalent states from subset construction are merged, so no smaller DFA accepts the same strings.</p>
+          <div class="toolbar" data-for="dfa-diagram">
+            <button type="button" class="tool" data-zoom="out" aria-label="Zoom out">−</button>
+            <button type="button" class="tool" data-zoom="in" aria-label="Zoom in">+</button>
+            <button type="button" class="tool" data-zoom="fit">Fit</button>
+          </div>
+          <div class="diagram inset" id="dfa-diagram" tabindex="0" aria-label="Minimized DFA state diagram"></div>
+
+          <h3>Transition table</h3>
+          <div class="table-wrap inset"><table id="dfa-table"></table></div>
+
+          <details>
+            <summary>How the states were merged</summary>
+            <ol id="min-rounds" class="plain-list"></ol>
+          </details>
+
+          <details id="subset-details">
+            <summary>DFA before minimization (subset construction)</summary>
+            <div class="toolbar" data-for="subset-diagram">
+              <button type="button" class="tool" data-zoom="out" aria-label="Zoom out">−</button>
+              <button type="button" class="tool" data-zoom="in" aria-label="Zoom in">+</button>
+              <button type="button" class="tool" data-zoom="fit">Fit</button>
+            </div>
+            <div class="diagram inset" id="subset-diagram" tabindex="0" aria-label="DFA before minimization"></div>
+            <h3>Transition table</h3>
+            <div class="table-wrap inset"><table id="subset-table"></table></div>
+            <h3>ε-closure and move for each state</h3>
+            <div id="subset-steps"></div>
+          </details>
+        </div>
+
+        <p class="legend">→ marks the start state. * marks an accepting state. ε is an empty move.</p>
+      </section>
+
+      <section class="glass" aria-labelledby="test-title">
+        <h2 id="test-title">Test strings</h2>
+        <div class="row">
+          <label for="test-input" class="sr-only">String to test</label>
+          <input id="test-input" class="field" type="text" placeholder="Try abb, then leave it empty to test the empty string" autocomplete="off" spellcheck="false">
+          <button id="run-btn" class="btn btn-primary" type="button">Run</button>
+        </div>
+        <div class="row controls">
+          <button id="step-btn" class="btn" type="button">Step</button>
+          <button id="reset-btn" class="btn" type="button">Reset</button>
+          <span id="step-status" class="status" aria-live="polite"></span>
+        </div>
+
+        <div id="tape" class="tape" aria-label="Input string"></div>
+        <div id="verdict" class="verdict" role="status" hidden></div>
+        <ol id="trace" class="trace"></ol>
+
+        <h3>Test many strings</h3>
+        <label for="batch" class="sr-only">One string per line</label>
+        <textarea id="batch" class="field" rows="4" placeholder="One string per line"></textarea>
+        <button id="batch-btn" class="btn" type="button">Test all strings</button>
+        <div class="table-wrap inset batch-wrap" id="batch-wrap" hidden>
+          <table id="batch-table" class="batch"></table>
+        </div>
+      </section>
+    </main>
+
+    <footer>Built with Python, Flask and Graphviz.</footer>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
