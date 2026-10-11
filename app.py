@@ -21,7 +21,9 @@ def _read_request():
     if len(raw_tests) > MAX_TESTS:
         raise ValueError(f"You may submit at most {MAX_TESTS} test strings.")
     tests = [str(t) for t in raw_tests]
-    dead_state = bool(data.get("dead_state", True))
+    dead_state = data.get("dead_state", True)
+    if not isinstance(dead_state, bool):
+        raise ValueError("'dead_state' must be a boolean.")
     if any(len(t) > MAX_TEST_LENGTH for t in tests):
         raise ValueError(f"Test strings may be at most {MAX_TEST_LENGTH} characters.")
     return regex, tests, dead_state

@@ -31,3 +31,18 @@ def test_oversized_tests_payload_returns_bad_request(client, endpoint):
 
     assert response.status_code == 400
     assert response.json == {"error": "You may submit at most 50 test strings."}
+
+
+@pytest.mark.parametrize("endpoint", ["/api/convert", "/api/test"])
+def test_string_dead_state_returns_bad_request(client, endpoint):
+    response = client.post(endpoint, json={"regex": "a", "dead_state": "false"})
+
+    assert response.status_code == 400
+    assert response.json == {"error": "'dead_state' must be a boolean."}
+
+
+def test_json_false_dead_state_is_accepted(client):
+    response = client.post("/api/test", json={"regex": "a", "dead_state": False})
+
+    assert response.status_code == 200
+    assert response.json["results"] == []
