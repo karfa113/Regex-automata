@@ -1,5 +1,9 @@
 # Regex → NFA → DFA → Minimal DFA
 
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Space+Grotesk&weight=600&size=24&duration=2800&pause=900&color=FFB870&center=true&vCenter=true&width=760&lines=Regex+to+DFA+Converter;Thompson's+Construction+Visualizer;Interactive+Automata+Theory+Tool" alt="Animated description of Regex Automata">
+</p>
+
 A small web simulator (Python + Flask + Graphviz) that converts a regular expression into an NFA
 (Thompson's construction), then into a DFA (subset construction), then **always shows the minimized DFA**.
 Strings are tested on the minimized DFA, with full-result and step-by-step modes. Step mode lights
