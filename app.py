@@ -3,6 +3,7 @@
 from flask import Flask, jsonify, render_template, request
 
 from automata import convert
+from flask import send_from_directory
 
 app = Flask(__name__)
 
@@ -57,3 +58,10 @@ def api_test():
 
 if __name__ == "__main__":
     app.run()
+
+@app.route('/google3892eb5cb3819e7e.html')
+def google_site_verification():
+    return send_from_directory(
+        app.root_path,
+        'google3892eb5cb3819e7e.html'
+    )
