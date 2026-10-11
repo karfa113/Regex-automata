@@ -2,9 +2,14 @@
 
 A small web simulator (Python + Flask + Graphviz) that converts a regular expression into an NFA
 (Thompson's construction), then into a DFA (subset construction), then **always shows the minimized DFA**.
-Strings are tested on the minimized DFA, with a step-by-step mode that lights up the current state.
+Strings are tested on the minimized DFA, with full-result and step-by-step modes. Step mode lights
+up the current DFA state as each input symbol is consumed.
 
-Supported syntax: letters/digits, `|` union, implicit concatenation, `*`, `+`, `( )`.
+Supported syntax: ASCII letters and digits, `|` union, implicit concatenation, `*` zero-or-more,
+`+` one-or-more, and `( )` grouping.
+
+Repeated quantifiers such as `a**`, `a++`, and `a*+` are rejected with a syntax error. Quantifiers
+must follow an operand and only one quantifier may be applied at a time.
 
 ## Setup
 
@@ -28,6 +33,32 @@ Notes:
 - The page loads the **Space Grotesk** font from Google Fonts, so it needs internet the first time (it falls back to a system font offline).
 - If Graphviz is not installed, diagrams are drawn in the browser instead (also needs internet).
 
+## API
+
+The application exposes two JSON endpoints:
+
+- `POST /api/convert` returns the parsed expression, NFA and DFA tables, diagrams,
+  construction details, and optional test results.
+- `POST /api/test` runs test strings without generating diagrams.
+
+Both endpoints accept a JSON object:
+
+```json
+{
+  "regex": "(a|b)*abb",
+  "tests": ["abb", "aabb", ""],
+  "dead_state": true
+}
+```
+
+Request validation rules:
+
+- `tests` must be a JSON list when provided; it defaults to an empty list.
+- A request may contain at most 50 test strings.
+- Each test string may contain at most 200 characters.
+- `dead_state` must be a JSON boolean when provided; it defaults to `true`.
+- Invalid payloads return HTTP `400` with an `error` message.
+
 ## Run the tests
 
 ```
@@ -40,7 +71,7 @@ and the minimized DFA is checked to be truly minimal (no two states are equivale
 ## Project layout
 
 ```
-app.py                 Flask routes: GET /, POST /api/convert (everything), POST /api/test (strings only)
+app.py                 Flask routes and JSON request validation
 automata/
   parser.py            validate, insert concatenation, infix → postfix
   nfa.py               Thompson's construction (|, concat, *, +); states renumbered so the start is q0
@@ -51,7 +82,11 @@ automata/
 templates/index.html   page
 static/style.css       black monochrome glassmorphic theme
 static/script.js       page logic, zoom, step-through simulation
-tests/                 pytest tests
+tests/
+  test_app.py          Flask API and request-validation tests
+  test_parser.py       parser and syntax-validation tests
+  test_nfa.py          Thompson construction tests
+  test_dfa.py          DFA, simulation, and minimization tests
 ```
 
 ## Notes
@@ -60,4 +95,4 @@ tests/                 pytest tests
 - Minimization uses Moore's partition refinement on the complete DFA (dead state included), so the
   result is the smallest DFA. For `(a|b)*abb`: 14 NFA states → 5 DFA states → 4 after minimization.
 - The "dead state" checkbox hides the dead state (∅) in both DFAs; the DFAs stay correct, just partial.
-- The DFA tab shows the minimized DFA. The DFA before minimization is under "DFA before minimization".# Regex-automata
+- The DFA tab shows the minimized DFA. The DFA before minimization is under "DFA before minimization".
