@@ -96,3 +96,24 @@ tests/
   result is the smallest DFA. For `(a|b)*abb`: 14 NFA states → 5 DFA states → 4 after minimization.
 - The "dead state" checkbox hides the dead state (∅) in both DFAs; the DFAs stay correct, just partial.
 - The DFA tab shows the minimized DFA. The DFA before minimization is under "DFA before minimization".
+
+## Author
+
+<div align="center">
+
+Built with love by **Monojit Karfa**.
+
+<a href="https://github.com/karfa113">
+  <img src="https://img.shields.io/badge/GitHub-karfa113-181717?logo=github&logoColor=white" alt="GitHub: karfa113">
+</a>
+<a href="https://instagram.com/wl_monojit">
+  <img src="https://img.shields.io/badge/Instagram-wl__monojit-E4405F?logo=instagram&logoColor=white" alt="Instagram: wl_monojit">
+</a>
+<a href="https://www.linkedin.com/in/karfa113">
+  <img src="https://img.shields.io/badge/LinkedIn-karfa113-0A66C2?logo=linkedin&logoColor=white" alt="LinkedIn: karfa113">
+</a>
+<a href="mailto:monojit.karfa.24@aot.edu.in">
+  <img src="https://img.shields.io/badge/Email-Contact-D14836?logo=gmail&logoColor=white" alt="Email Monojit Karfa">
+</a>
+
+</div>
