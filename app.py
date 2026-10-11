@@ -1,6 +1,6 @@
 """Flask server. Routes only; all logic lives in the automata/ package."""
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, Response, jsonify, render_template, request
 
 from automata import convert
 from flask import send_from_directory
@@ -33,6 +33,24 @@ def _read_request():
 @app.get("/")
 def index():
     return render_template("index.html")
+
+
+@app.get("/sitemap.xml")
+def sitemap():
+    sitemap_xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>{request.url_root}</loc></url>
+</urlset>
+"""
+    return Response(sitemap_xml, mimetype="application/xml")
+
+
+@app.get("/robots.txt")
+def robots():
+    return Response(
+        f"User-agent: *\nAllow: /\nSitemap: {request.url_root}sitemap.xml\n",
+        mimetype="text/plain",
+    )
 
 
 @app.post("/api/convert")
