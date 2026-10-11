@@ -11,9 +11,16 @@ MAX_TEST_LENGTH = 200
 
 
 def _read_request():
-    data = request.get_json(silent=True) or {}
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        raise ValueError("Request body must be a JSON object.")
     regex = str(data.get("regex", ""))
-    tests = [str(t) for t in data.get("tests", [])][:MAX_TESTS]
+    raw_tests = data.get("tests", [])
+    if not isinstance(raw_tests, list):
+        raise ValueError("'tests' must be a list of strings.")
+    if len(raw_tests) > MAX_TESTS:
+        raise ValueError(f"You may submit at most {MAX_TESTS} test strings.")
+    tests = [str(t) for t in raw_tests]
     dead_state = bool(data.get("dead_state", True))
     if any(len(t) > MAX_TEST_LENGTH for t in tests):
         raise ValueError(f"Test strings may be at most {MAX_TEST_LENGTH} characters.")

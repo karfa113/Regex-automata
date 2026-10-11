@@ -27,6 +27,12 @@ def test_spaces_are_ignored():
     assert validate("a | b") == "a|b"
 
 
+@pytest.mark.parametrize("bad", ["a**", "a++", "a*+", "a+*", "(ab)**", "a* +"])
+def test_repeated_quantifiers_are_invalid(bad):
+    with pytest.raises(ValueError, match="Repeated quantifiers"):
+        validate(bad)
+
+
 @pytest.mark.parametrize("bad", [
     "", "   ", "*a", "+a", "|a", "a|", "a||b", "()", "(a", "a)", "(|a)", "(a|)",
     "a$b", "(*a)", "a" * 101,

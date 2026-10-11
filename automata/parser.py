@@ -47,6 +47,11 @@ def validate(regex):
             if prev == "|":
                 raise ValueError(f"Missing operand after '|' before position {i}.")
         elif ch in "*+":
+            if prev is not None and prev in "*+":
+                raise ValueError(
+                    f"Repeated quantifiers at position {i} are not supported; "
+                    "use only one '*' or '+' after an operand."
+                )
             if prev is None or prev in "(|":
                 raise ValueError(f"Operator '{ch}' at position {i} has nothing to repeat.")
         elif ch == "|":
